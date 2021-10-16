@@ -1,37 +1,3 @@
-=begin
-
-A deck of 52 cards
-The deck is made up of four sets of 13 cards
-The four sets are: King, Queen, Spades, Clubs
-Each set contains the cards:
-Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
-Cards Two through Ten are face value
-Cards Jack, Queen, Kind are valued at 10
-Card Ace is valued at 1 OR 11. If a value of 11 will case a player to bust, the value should be 1.
-
-At game play:
-Each player is dealt 2 cards. 
-On each player's turn, they consider the values of their two cards and decide if they 
-want to hit (receive one more card from the deck), or stay (receive no additional cards)
-and submit their current hand to go against the other player's hand.
-A player can hit as many times as they want until 1. they decide to stay and submit
-their value, or 2. the value of they're hand is more than 21, in which case they "bust" and automatically lose
-the round.
-
-If both players submit their final hand values (stay, not bust) - then the values are
-compared and they player whose hand had the highest value wins the round.
-If the values are even, then it is a tie and nobody wins.
-The winner's score is incremented after each round.
-
-THe game can be replayed until one of the player's score reaches 5.
-The player who reaches 5 wins the game.
-
-Nouns (classes): Game, Deck, Card (Card Name, Suit, Value), Player (Dealer and Human), Hand_Value, Score, Result
-Verbs: (methods): Play, Initialize_Deck, Shuffle, Deal, Consider, Hit, Stay, Submit, Compare, Increment_Score, Give_Result
-Adjectives (boolean return values): busted? higher?
-
-=end
-
 class Game21
   SHORT_SLEEP = 1.5
   LONG_SLEEP = 3
@@ -46,7 +12,7 @@ class Game21
   end
 
   class Player
-  include Comparable
+    include Comparable
 
     attr_accessor :score, :hand, :name, :initial_hand
 
@@ -73,21 +39,21 @@ class Game21
         self.value = calculate_value
       end
 
-      def calculate_value
+      def calculate_value # Too many lines
         val = 0
-          aces_last.each do |card|
-            case card.name
-            when :Ace
-              if (val + 11 > 21)
-                val += 1
-              else
-                val += 11
-              end
-            else
-              val += card.value[0]
-            end
-          end
-          val
+        aces_last.each do |card|
+          val += case card.name
+                 when :Ace
+                   if val + 11 > 21
+                     1
+                   else
+                     11
+                   end
+                 else
+                   card.value[0]
+                 end
+        end
+        val
       end
 
       def busted?
@@ -100,10 +66,9 @@ class Game21
           sleep(SHORT_SLEEP)
         end
       end
-
     end
 
-    def display_initial_hand #####################
+    def display_initial_hand
       puts "#{self} has:"
       sleep(SHORT_SLEEP)
       initial_hand.each do |card|
@@ -121,7 +86,7 @@ class Game21
         init_hand = hand.cards[0..1]
       end
       self.initial_hand = init_hand
-    end ######################
+    end
 
     def get_move
       move = nil
@@ -151,7 +116,6 @@ class Game21
     def hand_reset
       self.hand = Hand.new
     end
-
   end
 
   class Deck
@@ -160,7 +124,6 @@ class Game21
               "9" => [9], "10" => [10], "J" => [10], "Q" => [10], "K" => [10] }
 
     SUITS = %w(♡ ♢ ♣ ♠)
-    
 
     attr_accessor :cards
 
@@ -177,21 +140,20 @@ class Game21
     def shuffle
       puts "Shuffling!"
       puts
-      self.cards.shuffle!
+      cards.shuffle!
       sleep(LONG_SLEEP)
     end
 
     def deal_to(player, card_count = 1)
       puts "Dealing #{card_count} to #{player}!"
       puts
-      card_count.times do 
+      card_count.times do
         player.hand.cards << cards.pop
       end
       player.hand.update_value
       player.set_initial_hand unless card_count == 1
       sleep(LONG_SLEEP)
     end
-    
   end
 
   class Card
@@ -208,12 +170,12 @@ class Game21
     end
 
     def display
-      if name == "10" ###
+      if name == "10"
         display_ten
       else
         display_non_ten
       end
-      puts "#{self}"
+      puts self
       puts
     end
 
@@ -232,10 +194,9 @@ class Game21
       puts "|    #{suit}|  "
       puts " ‾‾‾‾‾"
     end
-    
   end
 
-  def welcome
+  def welcome # Too many lines
     clear
     puts "Welcome to 21!"
     sleep(LONG_SLEEP)
@@ -249,7 +210,7 @@ class Game21
     clear
   end
 
-  def get_name
+  def get_name # Too many lines
     clear
     puts "What is your name?"
     name = nil
@@ -267,7 +228,7 @@ class Game21
     clear
     puts "Ok; here's how it works:"
     sleep(SHORT_SLEEP)
-    puts <<-FFF 
+    puts <<-FFF
 
     The goal of 21 is to amount your card values as close to 21 as
     possible without exceeding, or 'busting' it.
@@ -278,7 +239,7 @@ class Game21
     When it is your turn:
     'Hit' if you want to take one card from the deck.
     'Stay' if not.
-    
+
     Card Values:
     Ace: 1 or 11
     Two through Ten: Face Value
@@ -305,7 +266,7 @@ class Game21
     dealer.display_initial_hand
     player.display_initial_hand
   end
- 
+
   def initialize_names
     player.name = get_name
     dealer.name = "Dealer"
@@ -313,12 +274,12 @@ class Game21
     clear
   end
 
-  def player_turn
+  def player_turn # Too many lines, ABC too high
     loop do
       sleep(SHORT_SLEEP)
+      clear
       break player.bust if player.hand.busted?
       if player.get_move == "hit"
-        clear
         puts "#{player} chose to hit!"
         puts
         sleep(SHORT_SLEEP)
@@ -327,7 +288,6 @@ class Game21
         puts "#{player} has:"
         player.hand.display
       else
-        clear
         puts "#{player} chose to stay!"
         puts
         sleep(SHORT_SLEEP)
@@ -337,14 +297,14 @@ class Game21
     clear
   end
 
-  def dealer_turn
+  def dealer_turn # Too many lines, ABC too high
     loop do
       break dealer.bust if dealer.hand.busted?
       if dealer.hand.value >= 17
         puts "#{dealer} chose to stay!"
         puts
         sleep(SHORT_SLEEP)
-        break 
+        break
       else
         puts "#{dealer} chose to hit!"
         puts
@@ -355,24 +315,24 @@ class Game21
     end
   end
 
-  def find_winner
-   winner = if player.hand.busted?
-              dealer.score += 1
-              "#{dealer}"
-            elsif dealer.hand.busted?
-              player.score += 1
-              "#{player}"
-            elsif player == dealer
-              "Tie! Nobody"
-            else
-              w = [player, dealer].max.to_s
-              w == player ? player.score += 1 : dealer.score += 1
-              w
-            end
+  def find_winner # Too many lines, ABC too high
+    if player.hand.busted?
+      dealer.score += 1
+      dealer.to_s
+    elsif dealer.hand.busted?
+      player.score += 1
+      plsyer.to_s
+    elsif player == dealer
+      "Tie! Nobody"
+    else
+      w = [player, dealer].max.to_s
+      w == player ? player.score += 1 : dealer.score += 1
+      w
+    end
     winner
   end
 
-  def display_results 
+  def display_results
     puts "#{find_winner} wins!"
     puts
     answer = nil
@@ -413,14 +373,14 @@ class Game21
   def play_again?
     puts "Would you like to play another round? (y/n)"
     answer = nil
-    loop do 
+    loop do
       answer = gets.chomp.downcase[0]
       break if %w(y n).include?(answer)
     end
     answer == "y"
   end
 
-  def clear 
+  def clear
     system "clear"
   end
 
@@ -430,7 +390,7 @@ class Game21
     self.deck = Deck.new
   end
 
-  def main_game
+  def main_game # Too many lines, ABC too high
     loop do
       clear
       deck.shuffle
@@ -451,9 +411,7 @@ class Game21
     welcome
     main_game
   end
-
 end
 
 game = Game21.new
 game.play
-
